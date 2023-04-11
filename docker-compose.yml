@@ -1,0 +1,22 @@
+---
+version: "3.4"
+services:
+  nodejs:
+    image: node:18-slim
+    environment:
+      PORT: "3000"
+      # DEBUG: "express:*" # nodejs web server debug logging
+    ports:
+      - "3000:3000"
+    working_dir: /opt/node/project
+    # user: node  # Best practice, but "nautobot" container currently uses root --> permission issues for shared volume
+    volumes:
+      - ./project/ui/:/opt/node/project
+      - ./:/source
+      - ./example_plugin:/opt/example_plugin
+      - node_modules:/opt/node/project/node_modules
+    # Wait for nautobot container to be fully ready, meaning that it's already run `npm install/build` successfully
+    command: >
+      bash -c "npm run start"
+volumes:
+  node_modules:
